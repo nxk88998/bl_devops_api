@@ -189,11 +189,11 @@ if __name__ == "__main__":
     # 创建一个组
     ansible.inventory.add_group('webservers')
     # 向组内添加主机
-    server_list = ['123.60.180.89']
+    server_list = ['192.168.43.224']
     for ip in server_list:
         ssh_port = 22
         ssh_user = 'root'
-        ssh_pass = 'csnxk88998!'
+        ssh_pass = '123123'
         # 针对主机设置变量
         ansible.variable_manager.set_host_variable(host=ip, varname='ansible_ssh_port', value=ssh_port)
         ansible.variable_manager.set_host_variable(host=ip, varname='ansible_ssh_user', value=ssh_user)
