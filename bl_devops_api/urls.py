@@ -40,6 +40,8 @@ urlpatterns += [
     path('api/app_release/', include(router.urls))   #发布系统自动api路由展示
 ]
 
+
+
 #系统配置
 from system_config.views import CredentialViewSet
 router.register(r'credential', CredentialViewSet, basename="credential")  #私钥接口

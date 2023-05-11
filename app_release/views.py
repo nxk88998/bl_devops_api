@@ -9,7 +9,7 @@ from system_config.models import Credential
 from libs.gitlab import Git, git_repo_auth
 from django.conf import settings
 import os, json
-from libs.ansible_cicd import AnsibleApi
+#from libs.ansible_cicd import AnsibleApi
 from datetime import datetime, timedelta
 from cmdb.models import Server
 
@@ -157,10 +157,62 @@ class DeployView(APIView):
 
         if status == 0:
             ReleaseApply.objects.filter(id=apply_id).update(status=3, deploy_result=result)
-            #notify("通知：%s, 发布成功" %version_id)
+            notify("通知：%s, 发布成功" %version_id)
             res = {'code': 200, 'msg': '发布成功', 'data': result}
         else:
             ReleaseApply.objects.filter(id=apply_id).update(status=4, deploy_result=result)
-            #notify("通知：%s, 发布失败！" % version_id)
+            notify("通知：%s, 发布失败！" % version_id)
             res = {'code': 500, 'msg': '发布异常！', 'data': result}
         return Response(res)
+
+class RollbackView(APIView):
+    def post(self, request):
+        dst_dir = request.data.get('dst_dir')
+        history_version_dir = request.data.get('history_version_dir')
+        # apply_id = request.data.get('apply_id')
+        version_id = request.data.get('version_id')
+        server_ids = request.data.get('server_ids')
+        post_rollback_script = request.data.get('post_rollback_script')
+
+        with open('/tmp/post_rollback_script.sh', 'w') as f:
+            f.write(post_rollback_script)
+
+        ansible = AnsibleApi()
+        # 将发布配置部分变量传递给playbook使用
+        extra_vars = {
+            "dst_dir": dst_dir,
+            "history_version_dir": history_version_dir,
+            "version_id": version_id,
+        }
+        ansible.variable_manager._extra_vars = extra_vars
+
+        # 创建一个分组
+        ansible.inventory.add_group("webservers")
+        for i in server_ids:
+            server_obj = Server.objects.get(id=i)
+            # ssh_ip、ssh_port、ssh用户名、ssh密码
+            ssh_ip = server_obj.ssh_ip
+            ssh_port = server_obj.ssh_port
+            if server_obj.credential:
+                ssh_user = server_obj.credential.username
+                if server_obj.credential.auth_mode == 1:
+                    ssh_pass = server_obj.credential.password
+                    ansible.variable_manager.set_host_variable(host=ssh_ip, varname='ansible_ssh_pass', value=ssh_pass)
+                else:
+                    ssh_key = server_obj.credential.private_key
+                    key_file = "/tmp/.ssh_key"
+                    with open(key_file, 'w') as f:
+                        f.write(ssh_key)
+                    ansible.variable_manager.set_host_variable(host=ssh_ip, varname='ansible_ssh_private_key_file',
+                                                               value=key_file)
+            else:
+                ssh_user = 'root'
+            ansible.variable_manager.set_host_variable(host=ssh_ip, varname='ansible_ssh_port', value=ssh_port)
+            ansible.variable_manager.set_host_variable(host=ssh_ip, varname='ansible_ssh_user', value=ssh_user)
+            # 向组内添加主机
+            ansible.inventory.add_host(host=ssh_ip, group="webservers")
+
+        playbook = os.path.join(settings.BASE_DIR, 'app_release/files/rollback.yaml')
+        ansible.playbook_run([playbook])
+        res = {'code': 200, 'msg': '获取成功', 'data': ansible.get_result()}
+
