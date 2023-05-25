@@ -37,6 +37,7 @@ class ResultsCollectorJSONCallback(CallbackBase):
     # 初始化数据格式
     def __init_result_dict(self, result):
         if not result._task.name in self.result:
+            #判断result传入字典为“success”：{“IP”}格式
             self.result[result._task.name] = {
                 "success": {},
                 "failed": {},
@@ -48,6 +49,7 @@ class ResultsCollectorJSONCallback(CallbackBase):
         print("[%s] -> %s" % (result._task.name, result._host.get_name()))
         self.__init_result_dict(result)
         self.result[result._task.name]["success"][result._host.get_name()] = result._result
+
 
     # 执行失败
     def v2_runner_on_failed(self, result, *args, **kwargs):

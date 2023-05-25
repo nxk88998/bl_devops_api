@@ -1,0 +1,44 @@
+pipeline {
+    agent any
+    environment {
+        P4PORT = '11111111'
+        git_url = 'https://github.com/nxk88998/bl_devops_web.git'
+        credentials = '03c718e3-aa5c-4173-a764-db8b8ea8f64b'
+        GOPATH = sh( script: '''echo ${WORKSPACE}''', returnStdout: true ).trim()
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout([$class: 'GitSCM', branches: [[name: '*/main']], userRemoteConfigs: [[url: git_url,credentialsId: credentials ]]])
+            }
+        }
+        stage('Build') {
+            steps {
+                sh 'pwd && ls -lh'
+                sh 'echo ${P4PORT}'
+            }
+        }
+    }
+}
+
+
+
+pipeline {
+    agent any
+    environment {
+        P4PORT = '11111111'
+        git_url = 'https://github.com/nxk88998/bl_devops_web.git'
+        credentials = '03c718e3-aa5c-4173-a764-db8b8ea8f64b'
+        GOPATH = sh( script: '''echo ${WORKSPACE}''', returnStdout: true ).trim()
+    }
+    stages {
+        stage('Build') {
+            steps {
+                sh 'yarn install'
+                sh 'yarn build'
+                sh 'ls -lh'
+            }
+        }
+    }
+}
+

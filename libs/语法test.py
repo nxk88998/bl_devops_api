@@ -1,3 +1,5 @@
+
+
 class Sample:
     def __init__(self):
         print("自动调用构造方法")
@@ -6,13 +8,24 @@ class Sample:
 
 test = Sample()
 print(test.name)
+#
+#
+# class Person():
+#     def __init__(self, newPersionName):
+#         self.name = newPersionName
+#
+# p = Person('Bob')
+# print(p.name)
 
-
-class Person:
-    def __init__(self, newPersionName):
+class AnsibleApi():
+    def __init__(self,newPersionName = "123asdgf"):
         self.name = newPersionName
+a = AnsibleApi()
+print(a.name)
 
 
-p = Person('Bob')
-print(p.name)
+    # def command_run(self):
+    #     a = self.connection2
+    #     print(a)
+
 
