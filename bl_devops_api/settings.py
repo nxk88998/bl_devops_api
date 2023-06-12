@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'channels',
     'corsheaders',
     'webhooks',
+    'k8s',
 ]
 
 ASGI_APPLICATION = 'cmdb.websocket.routing.application'  #channels使用的路由文件在哪
@@ -93,27 +94,18 @@ WSGI_APPLICATION = 'bl_devops_api.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'devops',
-#         'USER': 'root',
-#         'PASSWORD': 'root',
-#         'HOST': '192.168.0.122',
-#         'PORT': '3306',
-#     }
-# }
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'devops',
         'USER': 'root',
-        'PASSWORD': 'Zxsm@88998!',
-        'HOST': '121.40.228.140',
-        'PORT': '44499',
+        'PASSWORD': 'root123',
+        'HOST': '192.168.0.122',
+        'PORT': '3306',
     }
 }
+
+
 
 
 # Password validation

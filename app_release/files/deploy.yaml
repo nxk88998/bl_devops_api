@@ -12,7 +12,7 @@
     shell: bash /tmp/post_checkout_script.sh
 
 - name: 目标主机
-  hosts: server
+  hosts: webservers
   gather_facts: no
   tasks:
   - name: 代码备份
@@ -23,7 +23,7 @@
         fi
         mv {{dst_dir}}/* {{history_version_dir}}/{{version_id}}/
       fi
-
+    ignore_errors: yes
   - name: 推送代码
     synchronize: src=/tmp/{{app_name}}/ dest={{dst_dir}}  rsync_opts=--exclude=.git
     when: source_file == "*"

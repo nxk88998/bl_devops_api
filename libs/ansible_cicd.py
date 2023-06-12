@@ -176,9 +176,9 @@ if __name__ == "__main__":
 
     # 设置全局变量（playbook文件用）
     ansible.variable_manager._extra_vars = {
-        "git_repo": "https://gitee.com/alianglab/web",
+        "git_repo": "https://gitee.com/lw-corn/corn-grain.git",
         "branch": "master",
-        "dst_dir": "/data",
+        "dst_dir": "/data2",
         "history_version_dir": '/backup',
         "history_version_number": 7,
         "app_name": "portal",
